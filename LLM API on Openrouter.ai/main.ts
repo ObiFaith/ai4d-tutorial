@@ -1,24 +1,30 @@
 import "dotenv/config";
 
 async function callLlmApi(prompt: string) {
-  const API_KEY = process.env.GEMINI_API_KEY;
-  const BASE_API_URL =
-    "https://generativelanguage.googleapis.com/v1beta/models/";
-  const MODEL_NAME = "gemini-2.5-flash";
+  const API_KEY = process.env.OPENROUTER_API_KEY;
 
-  const url = `${BASE_API_URL}${MODEL_NAME}:generateContent?key=${API_KEY}`;
-  const headers = { "Content-Type": "application/json" };
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-oss-120b:free",
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      }),
+    },
+  );
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-    }),
-  });
-
-  const result = await response.json();
-  return result?.candidates[0]?.content?.parts[0].text;
+  const data = await response.json();
+  return data.choices[0].message.content;
 }
 
 (async () => {
