@@ -4,6 +4,10 @@ const callLlmApi = async (prompt: string) => {
   const API_KEY = process.env.OPENROUTER_API_KEY;
   const MODEL_NAME = process.env.OPENROUTER_MODEL_NAME;
 
+  if (!API_KEY || !MODEL_NAME) {
+    throw new Error("Missing environment variables");
+  }
+
   const response = await fetch(
     "https://openrouter.ai/api/v1/chat/completions",
     {
@@ -25,10 +29,16 @@ const callLlmApi = async (prompt: string) => {
   );
 
   const data = await response.json();
-  return data.choices[0].message.content;
-}
+  return data?.choices?.[0]?.message?.content ?? "No response";
+};
 
 (async () => {
   const result = await callLlmApi(process.argv[2]);
+
+  if (!prompt) {
+    console.log("Please provide a prompt");
+    process.exit(1);
+  }
+
   console.log(result);
 })();
