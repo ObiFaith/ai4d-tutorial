@@ -1,7 +1,8 @@
 import "dotenv/config";
 
-async function callLlmApi(prompt: string) {
+const callLlmApi = async (prompt: string) => {
   const API_KEY = process.env.OPENROUTER_API_KEY;
+  const MODEL_NAME = process.env.OPENROUTER_MODEL_NAME;
 
   const response = await fetch(
     "https://openrouter.ai/api/v1/chat/completions",
@@ -12,7 +13,7 @@ async function callLlmApi(prompt: string) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-oss-120b:free",
+        model: MODEL_NAME,
         messages: [
           {
             role: "user",
